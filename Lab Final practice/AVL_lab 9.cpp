@@ -56,3 +56,53 @@ class Node{
 	
 	
 };
+
+
+
+
+Node* insert(Node* node, int key) {
+
+    // 1. Normal BST insertion
+    if (node == nullptr)
+        return new Node(key);
+
+    if (key < node->data)
+        node->left = insert(node->left, key);
+    else if (key > node->data)
+        node->right = insert(node->right, key);
+    else
+        return node; // Duplicate keys not allowed
+
+    // 2. Update height
+    updateHeight(node);
+
+    // 3. Get balance factor
+    int balance = getBalance(node);
+
+    // =========================
+    // 4. Handle 4 AVL imbalance cases
+    // =========================
+
+    // Left Left Case
+    if (balance > 1 && key < node->left->data)
+        return rightRotate(node);
+
+    // Right Right Case
+    if (balance < -1 && key > node->right->data)
+        return leftRotate(node);
+
+    // Left Right Case
+    if (balance > 1 && key > node->left->data) {
+        node->left = leftRotate(node->left);
+        return rightRotate(node);
+    }
+
+    // Right Left Case
+    if (balance < -1 && key < node->right->data) {
+        node->right = rightRotate(node->right);
+        return leftRotate(node);
+    }
+
+    // 5. Return the unchanged (balanced) node
+    return node;
+}
